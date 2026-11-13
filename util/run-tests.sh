@@ -51,7 +51,6 @@ else
 fi
 if [[ "$expr" == enabled ]]; then
     grep -q '^#define NGX_EXPR  *1$' objs/ngx_auto_config.h
-    grep -q '^#define NGX_RESTY_EXT  *1$' objs/ngx_auto_config.h
 fi
 make -j"$build_jobs"
 

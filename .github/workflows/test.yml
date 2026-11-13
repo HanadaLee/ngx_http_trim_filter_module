@@ -14,29 +14,15 @@ concurrency:
 
 jobs:
   test:
-    name: ${{ matrix.name }}
+    name: ${{ matrix.source }}-${{ matrix.expr }}-${{ matrix.link }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - name: nginx-static
-            nginx_repository: nginx/nginx
-            nginx_ref: release-1.31.7
-            expr: disabled
-            link: static
-          - name: nginx-dynamic
-            nginx_repository: nginx/nginx
-            nginx_ref: release-1.31.7
-            expr: disabled
-            link: dynamic
-          - name: nginx-ext-expr
-            nginx_repository: HanadaLee/nginx-ext
-            # nginx-ext 1.31.7, including conditional directive support.
-            nginx_ref: 6b68dccc6dd0ef559b7f98a65dc57db24ae23d2a
-            expr: enabled
-            link: static
+        source: [nginx, nginx-ext]
+        expr: [enabled, disabled]
+        link: [static, dynamic]
     steps:
       - name: Check out module
         uses: actions/checkout@v6
@@ -46,8 +32,8 @@ jobs:
       - name: Check out nginx
         uses: actions/checkout@v6
         with:
-          repository: ${{ matrix.nginx_repository }}
-          ref: ${{ matrix.nginx_ref }}
+          repository: ${{ matrix.source == 'nginx' && 'nginx/nginx' || 'HanadaLee/nginx-ext' }}
+          ref: ${{ matrix.source == 'nginx' && 'release-1.31.8' || '1.31.8' }}
           path: .ci/nginx
           persist-credentials: false
 
@@ -56,7 +42,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: HanadaLee/ngx_expr_module
-          ref: '1.0.0'
+          ref: '1.0.1'
           path: .ci/ngx_expr_module
           persist-credentials: false
 
@@ -95,7 +81,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: test-logs-${{ matrix.name }}
+          name: test-logs-${{ matrix.source }}-${{ matrix.expr }}-${{ matrix.link }}
           path: |
             .ci/test-output/**/*.log
             .ci/test-output/*.txt

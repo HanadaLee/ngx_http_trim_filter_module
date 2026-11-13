@@ -9,7 +9,7 @@
 #include <ngx_core.h>
 #include <ngx_http.h>
 
-#if (NGX_RESTY_EXT && NGX_EXPR)
+#if (NGX_EXPR)
 #include <ngx_http_expr_module.h>
 #endif
 
@@ -599,7 +599,7 @@ typedef struct {
     ngx_hash_t                   types;
     ngx_array_t                 *types_keys;
 
-#if (NGX_RESTY_EXT && NGX_EXPR)
+#if (NGX_EXPR)
     ngx_array_t                 *js;
     ngx_array_t                 *css;
     ngx_array_t                 *trim;
@@ -635,7 +635,7 @@ static ngx_int_t ngx_http_trim_filter_init(ngx_conf_t *cf);
 static ngx_command_t  ngx_http_trim_commands[] = {
 
     { ngx_string("trim"),
-#if (NGX_RESTY_EXT && NGX_EXPR)
+#if (NGX_EXPR)
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF
       |NGX_HTTP_MAIN_WHEN_CONF|NGX_HTTP_SRV_WHEN_CONF|NGX_HTTP_LOC_WHEN_CONF
       |NGX_CONF_FLAG,
@@ -649,7 +649,7 @@ static ngx_command_t  ngx_http_trim_commands[] = {
       NULL },
 
     { ngx_string("trim_js"),
-#if (NGX_RESTY_EXT && NGX_EXPR)
+#if (NGX_EXPR)
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF
       |NGX_HTTP_MAIN_WHEN_CONF|NGX_HTTP_SRV_WHEN_CONF|NGX_HTTP_LOC_WHEN_CONF
       |NGX_CONF_FLAG,
@@ -663,7 +663,7 @@ static ngx_command_t  ngx_http_trim_commands[] = {
       NULL },
 
     { ngx_string("trim_css"),
-#if (NGX_RESTY_EXT && NGX_EXPR)
+#if (NGX_EXPR)
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF
       |NGX_HTTP_MAIN_WHEN_CONF|NGX_HTTP_SRV_WHEN_CONF|NGX_HTTP_LOC_WHEN_CONF
       |NGX_CONF_FLAG,
@@ -737,7 +737,7 @@ static ngx_http_variable_t  ngx_http_trim_vars[] = {
 static ngx_int_t
 ngx_http_trim_header_filter(ngx_http_request_t *r)
 {
-#if !(NGX_RESTY_EXT && NGX_EXPR)
+#if !(NGX_EXPR)
     ngx_str_t                  flag;
 #endif
     ngx_http_trim_ctx_t       *ctx;
@@ -745,7 +745,7 @@ ngx_http_trim_header_filter(ngx_http_request_t *r)
 
     conf = ngx_http_get_module_loc_conf(r, ngx_http_trim_filter_module);
 
-#if (NGX_RESTY_EXT && NGX_EXPR)
+#if (NGX_EXPR)
     if (ngx_http_get_expr_flag_value(r, conf->trim) != 1
 #else
     if (!conf->trim
@@ -762,7 +762,7 @@ ngx_http_trim_header_filter(ngx_http_request_t *r)
         return ngx_http_next_header_filter(r);
     }
 
-#if !(NGX_RESTY_EXT && NGX_EXPR)
+#if !(NGX_EXPR)
     if (ngx_http_complex_value(r, conf->trim, &flag) != NGX_OK) {
         return NGX_ERROR;
     }
@@ -779,7 +779,7 @@ ngx_http_trim_header_filter(ngx_http_request_t *r)
         return NGX_ERROR;
     }
 
-#if (NGX_RESTY_EXT && NGX_EXPR)
+#if (NGX_EXPR)
     ctx->parser.js = (ngx_http_get_expr_flag_value(r, conf->js) == 1);
     ctx->parser.css = (ngx_http_get_expr_flag_value(r, conf->css) == 1);
 #else
@@ -1050,7 +1050,7 @@ ngx_http_trim_create_loc_conf(ngx_conf_t *cf)
      *     conf->css = NULL;
      */
 
-#if (NGX_RESTY_EXT && NGX_EXPR)
+#if (NGX_EXPR)
     conf->trim = NGX_CONF_UNSET_PTR;
     conf->js = NGX_CONF_UNSET_PTR;
     conf->css = NGX_CONF_UNSET_PTR;
@@ -1073,7 +1073,7 @@ ngx_http_trim_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
         return NGX_CONF_ERROR;
     }
 
-#if (NGX_RESTY_EXT && NGX_EXPR)
+#if (NGX_EXPR)
     if (ngx_conf_merge_expr_flag_value(cf, &conf->trim, prev->trim, 0) != NGX_OK
         || ngx_conf_merge_expr_flag_value(cf, &conf->js, prev->js, 0) != NGX_OK
         || ngx_conf_merge_expr_flag_value(cf, &conf->css, prev->css, 0)

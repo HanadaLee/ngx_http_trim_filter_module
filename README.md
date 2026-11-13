@@ -19,7 +19,7 @@ is no aggressive mode or additional safety setting.
 
 ## Conditional Configuration
 
-When built with both `NGX_RESTY_EXT` and `ngx_expr_module`, `trim`, `trim_js`
+When built with `ngx_expr_module`, `trim`, `trim_js`
 and `trim_css` accept literal `on` or `off` values and can be used inside
 `when` blocks at the `http`, `server` and `location` levels:
 
